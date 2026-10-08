@@ -20,4 +20,14 @@ describe("quiz builder", () => {
       { key: "a:reading", itemId: "a", contentType: "vocabulary", method: "reading" },
     ]);
   });
+
+  it("keeps learning items ahead of new and mastered items", () => {
+    const progress = {
+      kanji_n4_001: { itemId: "kanji_n4_001", type: "kanji" as const, methods: { hanviet: { correct: 0, wrong: 1, streak: 0, status: "learning" as const, lastAnsweredAt: 0 } } },
+      kanji_n4_002: { itemId: "kanji_n4_002", type: "kanji" as const, methods: { hanviet: { correct: 2, wrong: 0, streak: 2, status: "mastered" as const, lastAnsweredAt: 0 } } },
+    };
+    const quiz = buildLearnQuiz({ contentType: "kanji", level: "N4", method: "hanviet", count: 2, progress, rng: () => 0 });
+    expect(quiz[0]?.itemId).toBe("kanji_n4_001");
+    expect(quiz[1]?.itemId).not.toBe("kanji_n4_002");
+  });
 });

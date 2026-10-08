@@ -1,15 +1,15 @@
 import type { Kanji, Vocabulary } from "@/types/content";
 import type { QuizQuestion } from "@/types/quiz";
 import { capitalizeFirst } from "./normalize";
-import { checkHanViet } from "./checkHanViet";
-import { checkMeaning, getMeaningAnswers } from "./checkMeaning";
-import { checkReading, getReadingAnswers } from "./checkReading";
+import { getMeaningAnswers } from "./checkMeaning";
+import { getReadingAnswers } from "./checkReading";
+import { validateKanjiAnswer, type AnswerValidation, type AnswerValidationStatus } from "./validateAnswer";
 
 export function checkAnswer(
   question: QuizQuestion,
   input: string,
   item: Kanji | Vocabulary,
-): { correct: boolean; expected: string[] } {
+): AnswerValidation & { expected: string[] } {
   const expected =
     question.method === "hanviet" && "hanViet" in item
       ? item.hanViet.map(capitalizeFirst)
@@ -17,19 +17,21 @@ export function checkAnswer(
         ? getMeaningAnswers(item).map(capitalizeFirst)
         : getReadingAnswers(item);
 
-  const correct =
+  const validation =
     question.method === "hanviet" && "hanViet" in item
-      ? checkHanViet(input, item)
+      ? validateKanjiAnswer(input, item.hanViet, "hanviet")
       : question.method === "meaning"
-        ? checkMeaning(input, item)
+        ? validateKanjiAnswer(input, getMeaningAnswers(item), "meaning")
         : question.method === "reading"
-          ? checkReading(input, item)
-          : false;
+          ? validateKanjiAnswer(input, getReadingAnswers(item), "reading")
+          : { correct: false, status: "incorrect" as AnswerValidationStatus };
 
-  return { correct, expected };
+  return { ...validation, expected };
 }
 
 export { checkHanViet } from "./checkHanViet";
 export { checkMeaning } from "./checkMeaning";
 export { checkReading } from "./checkReading";
 export { capitalizeFirst, normalizeViet } from "./normalize";
+export { validateKanjiAnswer } from "./validateAnswer";
+export type { AnswerValidation, AnswerValidationStatus } from "./validateAnswer";

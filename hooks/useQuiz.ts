@@ -8,7 +8,6 @@ import { getItemById } from "@/repositories/contentRepository";
 import { checkAnswer } from "@/utils/answer-checker";
 import { useProgressStore } from "@/store/progressStore";
 import { useSessionStore } from "@/store/sessionStore";
-import { buildLearnQuiz } from "@/utils/quiz-builder";
 import { shouldAdvanceOnResultEnter } from "@/utils/quiz-navigation";
 
 export function useQuiz(contentType: ContentType, level?: Level) {
@@ -17,8 +16,8 @@ export function useQuiz(contentType: ContentType, level?: Level) {
   const submitSession = useSessionStore((state) => state.submit);
   const nextSession = useSessionStore((state) => state.next);
   const startSession = useSessionStore((state) => state.start);
-  const progress = useProgressStore((state) => state.items);
-  const recordAnswer = useProgressStore((state) => state.recordAnswer);
+  const clearSession = useSessionStore((state) => state.clear);
+  const updateAnswerResult = useProgressStore((state) => state.updateAnswerResult);
   const submittedAt = useRef(0);
   const currentQuestion: QuizQuestion | undefined = session?.questions[session.index];
   const currentItem = currentQuestion ? getItemById(currentQuestion.contentType, currentQuestion.itemId) : undefined;
@@ -33,10 +32,10 @@ export function useQuiz(contentType: ContentType, level?: Level) {
     if (!session || !currentQuestion || !currentItem || session.phase !== "answering") return;
     if (currentQuestion.key in session.results) return;
     const result = checkAnswer(currentQuestion, input, currentItem);
-    recordAnswer({ itemId: currentQuestion.itemId, type: currentQuestion.contentType, method: currentQuestion.method, correct: result.correct });
+    updateAnswerResult({ itemId: currentQuestion.itemId, type: currentQuestion.contentType, method: currentQuestion.method, isCorrect: result.correct });
     submittedAt.current = Date.now();
-    submitSession(result.correct, input);
-  }, [currentItem, currentQuestion, recordAnswer, session, submitSession]);
+    submitSession(result.correct, input, result.status);
+  }, [currentItem, currentQuestion, session, submitSession, updateAnswerResult]);
 
   useEffect(() => {
     if (session?.phase !== "result") return;
@@ -59,11 +58,29 @@ export function useQuiz(contentType: ContentType, level?: Level) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [nextSession, session?.phase]);
 
+  const reviewMistakes = useCallback(() => {
+    if (!session || !session.level) return;
+    const questions = session.questions.filter((question) => session.results[question.key] === false);
+    if (questions.length === 0) return;
+    startSession({
+      ...session,
+      mode: "review",
+      questions,
+      index: 0,
+      phase: "answering",
+      lastInput: undefined,
+      lastCorrect: undefined,
+      lastResultStatus: undefined,
+      results: {},
+    });
+    router.push(`/${contentType}/${session.level.toLowerCase()}/quiz`);
+  }, [contentType, router, session, startSession]);
+
   const restart = useCallback(() => {
-    if (!session || session.mode === "review" || !session.level || !session.method) return;
-    const questions = buildLearnQuiz({ contentType: session.contentType, level: session.level, method: session.method, count: session.questions.length, progress });
-    startSession({ ...session, questions, index: 0, phase: "answering", lastInput: undefined, lastCorrect: undefined, results: {} });
-  }, [progress, session, startSession]);
+    if (!session || !session.level) return;
+    clearSession();
+    router.push(`/${contentType}/${session.level.toLowerCase()}`);
+  }, [clearSession, contentType, router, session]);
 
   return {
     session,
@@ -74,5 +91,6 @@ export function useQuiz(contentType: ContentType, level?: Level) {
     submit,
     next: nextSession,
     restart,
+    reviewMistakes,
   };
 }

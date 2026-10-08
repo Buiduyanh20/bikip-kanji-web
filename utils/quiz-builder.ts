@@ -3,26 +3,6 @@ import type { ItemProgress } from "@/types/progress";
 import type { Method, QuizQuestion } from "@/types/quiz";
 import { getItemsByLevel } from "@/repositories/contentRepository";
 import { getMistakes } from "./mastery";
-import { PRIORITY_SCORES } from "./constants";
-
-function score(progress: ItemProgress | undefined, rng: () => number): number {
-  const methodProgress = progress ? Object.values(progress.methods)[0] : undefined;
-  if (!methodProgress) return PRIORITY_SCORES.new + rng() * PRIORITY_SCORES.randomNoise;
-  if (methodProgress.status === "learning") {
-    const base = methodProgress.wrong > 0
-      ? PRIORITY_SCORES.learningWithMistakes + Math.min(methodProgress.wrong, PRIORITY_SCORES.maxWrongBonus)
-      : PRIORITY_SCORES.learningWithoutMistakes;
-    return base + rng() * PRIORITY_SCORES.randomNoise;
-  }
-  const elapsedDays = methodProgress.lastAnsweredAt
-    ? (Date.now() - methodProgress.lastAnsweredAt) / 86_400_000
-    : 0;
-  return PRIORITY_SCORES.mastered + Math.min(
-    PRIORITY_SCORES.maxRecencyBonus,
-    Math.floor(elapsedDays / PRIORITY_SCORES.recencyIntervalDays) * PRIORITY_SCORES.recencyBonusPerInterval,
-  ) + rng() * PRIORITY_SCORES.randomNoise;
-}
-
 function shuffle<T>(items: T[], rng: () => number): T[] {
   const result = [...items];
   for (let index = result.length - 1; index > 0; index -= 1) {
@@ -43,12 +23,14 @@ export function buildLearnQuiz({
   rng?: () => number;
 }): QuizQuestion[] {
   const items = getItemsByLevel(contentType, level).map((item) => item.id);
-  const ranked = items
-    .map((itemId) => ({ itemId, priority: score(progress[itemId] ? { ...progress[itemId], methods: { [method]: progress[itemId].methods[method] } } : undefined, rng) }))
-    .sort((a, b) => b.priority - a.priority)
-    .slice(0, count)
-    .map(({ itemId }) => ({ key: `${itemId}:${method}`, itemId, contentType, method }));
-  return shuffle(ranked, rng);
+  const groups: Record<"learning" | "new" | "mastered", string[]> = { learning: [], new: [], mastered: [] };
+  items.forEach((itemId) => {
+    const methodProgress = progress[itemId]?.methods[method];
+    const status = methodProgress?.status ?? "new";
+    groups[status].push(itemId);
+  });
+  const ordered = [...shuffle(groups.learning, rng), ...shuffle(groups.new, rng), ...shuffle(groups.mastered, rng)];
+  return ordered.slice(0, count).map((itemId) => ({ key: `${itemId}:${method}`, itemId, contentType, method }));
 }
 
 export function buildReviewQuiz({

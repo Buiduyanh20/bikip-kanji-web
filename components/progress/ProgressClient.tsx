@@ -7,7 +7,7 @@ import { ProgressSummary } from "./ProgressSummary";
 
 export function ProgressClient() {
   const items = useProgressStore((state) => state.items);
-  const kanji = getItemsByLevel("kanji", "N4");
+  const kanji = getItemsByLevel("kanji", "N5");
   const vocabulary = getItemsByLevel("vocabulary", "N4");
-  return <HydrationGate><div className="space-y-6"><ProgressSummary content={kanji} contentType="kanji" methods={getAvailableMethods("kanji", "N4")} items={items} /><ProgressSummary content={vocabulary} contentType="vocabulary" methods={getAvailableMethods("vocabulary", "N4")} items={items} /></div></HydrationGate>;
+  return <HydrationGate><div className="space-y-6"><ProgressSummary content={kanji} contentType="kanji" methods={getAvailableMethods("kanji", "N5")} items={items} /><ProgressSummary content={vocabulary} contentType="vocabulary" methods={getAvailableMethods("vocabulary", "N4")} items={items} /></div></HydrationGate>;
 }

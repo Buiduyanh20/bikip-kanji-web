@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { MobileBottomNav } from "./MobileBottomNav";
+import { Footer } from "./Footer";
 
 /**
  * Khung chung cho mọi màn hình: thanh logo trên cùng + nội dung + thanh điều hướng dưới (mobile).
@@ -23,6 +24,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* pb-24 chừa chỗ cho thanh điều hướng dưới trên mobile */}
       <main className="flex-1 pb-24 md:pb-8">{children}</main>
+
+      <Footer />
 
       <Suspense fallback={null}>
         <MobileBottomNav />

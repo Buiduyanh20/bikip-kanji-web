@@ -52,7 +52,7 @@ export function summarizeByLevel(
   return levels.map((level) => {
     const levelItems = content.filter((item) => item.level === level);
     const mastered = levelItems.filter((item) => isItemMastered(item, methods, items)).length;
-    const learning = levelItems.filter((item) => methods.some((method) => items[item.id]?.methods[method]?.status === "learning")).length;
+    const learning = levelItems.filter((item) => !isItemMastered(item, methods, items) && methods.some((method) => items[item.id]?.methods[method]?.status === "learning")).length;
     return { level, contentType, total: levelItems.length, mastered, learning, newItems: levelItems.length - mastered - learning };
   });
 }

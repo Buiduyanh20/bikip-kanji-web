@@ -23,5 +23,6 @@ export interface QuizSession {
   phase: QuizPhase;
   lastInput?: string;
   lastCorrect?: boolean;
+  lastResultStatus?: "exact" | "near" | "incorrect";
   results: Record<string, boolean>;
 }
