@@ -1,0 +1,12 @@
+[
+  {"id":"kanji_n4_001","char":"力","level":"N4","hanViet":["Lực"],"meanings":["Sức mạnh"],"onyomi":["リョク","リキ","リイ"],"kunyomi":["ちから"],"hint":"Hình cánh tay gồng cơ bắp","story":"","examples":[]},
+  {"id":"kanji_n4_002","char":"夕","level":"N4","hanViet":["Tịch"],"meanings":["Buổi tối"],"onyomi":["セキ"],"kunyomi":["ゆう"],"hint":"Nửa vầng trăng lúc chiều tà","story":"","examples":[]},
+  {"id":"kanji_n4_007","char":"牛","level":"N4","hanViet":["Ngưu"],"meanings":["Con trâu","Bò"],"onyomi":["ギュウ"],"kunyomi":["うし"],"hint":"","story":"","examples":[]},
+  {"id":"kanji_n4_009","char":"犬","level":"N4","hanViet":["Khuyển"],"meanings":["Con chó"],"onyomi":["ケン"],"kunyomi":["いぬ"],"hint":"Chữ 大 (to) thêm một dấu chấm như cái tai chó","story":"","examples":[]},
+  {"id":"kanji_n4_012","char":"方","level":"N4","hanViet":["Phương"],"meanings":["Ngài","Vị","Phương hướng"],"onyomi":["ホウ"],"kunyomi":["かた"],"hint":"","story":"","examples":[]},
+  {"id":"kanji_n4_013","char":"心","level":"N4","hanViet":["Tâm"],"meanings":["Trái tim"],"onyomi":["シン"],"kunyomi":["こころ"],"hint":"","story":"","examples":[]},
+  {"id":"kanji_n4_033","char":"自","level":"N4","hanViet":["Tự"],"meanings":["Tự do"],"onyomi":["ジ","シ"],"kunyomi":["みずか.ら","おの.ずから"],"hint":"","story":"","examples":[]},
+  {"id":"kanji_n4_071","char":"画","level":"N4","hanViet":["Họa","Hoạch"],"meanings":["Vẽ","Kế hoạch"],"onyomi":["ガ","カク","エ","カイ"],"kunyomi":["えが.く"],"hint":"","story":"","examples":[]},
+  {"id":"kanji_n4_119","char":"夏","level":"N4","hanViet":["Hạ"],"meanings":["Mùa hè"],"onyomi":["カ","ガ","ゲ"],"kunyomi":["なつ"],"hint":"","story":"","examples":[]},
+  {"id":"kanji_n4_177","char":"薬","level":"N4","hanViet":["Dược"],"meanings":["Thuốc"],"onyomi":["ヤク"],"kunyomi":["くすり"],"hint":"","story":"","examples":[]}
+]
