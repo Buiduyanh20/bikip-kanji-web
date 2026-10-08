@@ -2,8 +2,12 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const kanji = JSON.parse(await readFile(resolve(root, "data/kanji.json"), "utf8"));
-const vocabulary = JSON.parse(await readFile(resolve(root, "data/vocabulary.json"), "utf8"));
+const levels = ["n1", "n2", "n3", "n4", "n5"];
+const readLevelData = async (directory) => (await Promise.all(
+  levels.map(async (level) => JSON.parse((await readFile(resolve(root, `data/${directory}/${level}.json`), "utf8")).replace(/^\uFEFF/, ""))),
+)).flat();
+const kanji = await readLevelData("kanji");
+const vocabulary = await readLevelData("vocabulary");
 const errors = [];
 const ids = new Set();
 const charsByLevel = new Set();

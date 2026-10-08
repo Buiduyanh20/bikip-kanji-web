@@ -1,10 +1,9 @@
-import kanjiData from "@/data/kanji.json";
-import vocabularyData from "@/data/vocabulary.json";
+import { kanjiData, vocabularyData } from "@/data";
 import type { ContentType, Kanji, Level, Vocabulary } from "@/types/content";
 import type { Method } from "@/types/quiz";
 
-const kanji = kanjiData as Kanji[];
-const vocabulary = vocabularyData as Vocabulary[];
+const kanji = Object.values(kanjiData).flat() as Kanji[];
+const vocabulary = Object.values(vocabularyData).flat() as Vocabulary[];
 const kanjiById = new Map(kanji.map((item) => [item.id, item]));
 const vocabularyById = new Map(vocabulary.map((item) => [item.id, item]));
 
