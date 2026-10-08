@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans, Noto_Sans_JP } from "next/font/google";
 import { AppShell } from "@/components/layout/AppShell";
+import { HydrationDiagnostics } from "@/components/layout/HydrationDiagnostics";
 import "./globals.css";
 
 const inter = Inter({
@@ -38,9 +39,14 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const htmlClassName = `${inter.variable} ${notoSans.variable} ${notoJp.variable}`;
+  if (process.env.NODE_ENV !== "production") {
+    console.info("[Bí Kíp Kanji] html className server:", htmlClassName);
+  }
   return (
-    <html lang="vi" className={`${inter.variable} ${notoSans.variable} ${notoJp.variable}`}>
+    <html lang="vi" className={htmlClassName} suppressHydrationWarning>
       <body className="antialiased">
+        <HydrationDiagnostics serverClassName={htmlClassName} />
         <AppShell>{children}</AppShell>
       </body>
     </html>

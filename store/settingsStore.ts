@@ -8,9 +8,9 @@ import { createSafeStorage } from "./storage";
 type SettingsState = {
   userName: string;
   lastMethod?: Method;
-  lastCount?: number;
+  lastCount?: number | "all";
   setUserName: (userName: string) => void;
-  setLastLearningOptions: (method: Method, count: number) => void;
+  setLastLearningOptions: (method: Method, count: number | "all") => void;
   resetSettings: () => void;
 };
 

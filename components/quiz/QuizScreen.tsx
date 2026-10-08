@@ -22,10 +22,10 @@ export function QuizScreen({ contentType, level }: { contentType: ContentType; l
   }, [item, question]);
   if (!quiz.session || !question || !item) return <PageContainer><div className="animate-pulse rounded-2xl bg-muted p-8">Đang tải phiên học...</div></PageContainer>;
   if (quiz.phase === "finished") {
-    const wrong = quiz.session.questions.filter((entry) => quiz.session?.results[entry.key] === false).map((entry) => entry.itemId);
+    const wrong = quiz.session.questions.filter((entry) => quiz.session?.results[entry.key] === false);
     const correct = Object.values(quiz.session.results).filter(Boolean).length;
     return <PageContainer size="narrow"><QuizSummary correct={correct} total={quiz.session.questions.length} mistakes={wrong} reviewMode={quiz.session.mode === "review"} onRestart={quiz.restart} onReview={() => undefined} /></PageContainer>;
   }
   const result = quiz.session.lastCorrect ?? false;
-  return <PageContainer size="narrow"><div className="space-y-6"><QuizProgressBar label={quiz.progressLabel} value={quiz.session.index + 1} total={quiz.session.questions.length} /><p className="text-center text-lg font-semibold">{getQuestionLabel(contentType, question.method)}</p>{quiz.phase === "answering" ? <><QuestionCard item={item} /><AnswerInput onSubmit={quiz.submit} /></> : <ResultPanel item={item} method={question.method} correct={result} input={quiz.session.lastInput ?? ""} expected={expected} onNext={quiz.next} last={quiz.session.index === quiz.session.questions.length - 1} />}</div></PageContainer>;
+  return <PageContainer size="narrow"><div className="space-y-6"><QuizProgressBar label={quiz.progressLabel} value={quiz.session.index + 1} total={quiz.session.questions.length} /><p className="text-center text-lg font-semibold">{getQuestionLabel(contentType, question.method)}</p>{quiz.phase === "answering" ? <><QuestionCard item={item} /><AnswerInput onSubmit={quiz.submit} /></> : <><ResultPanel item={item} method={question.method} correct={result} input={quiz.session.lastInput ?? ""} expected={expected} onNext={quiz.next} last={quiz.session.index === quiz.session.questions.length - 1} /><p className="hidden text-center text-xs text-muted-foreground [@media(hover:hover)_and_(pointer:fine)]:block">Nhấn Enter để tiếp tục</p></>}</div></PageContainer>;
 }

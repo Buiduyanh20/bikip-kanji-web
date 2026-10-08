@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import type { ContentType, Level, Kanji, Vocabulary } from "@/types/content";
 import type { QuizQuestion } from "@/types/quiz";
@@ -9,6 +9,7 @@ import { checkAnswer } from "@/utils/answer-checker";
 import { useProgressStore } from "@/store/progressStore";
 import { useSessionStore } from "@/store/sessionStore";
 import { buildLearnQuiz } from "@/utils/quiz-builder";
+import { shouldAdvanceOnResultEnter } from "@/utils/quiz-navigation";
 
 export function useQuiz(contentType: ContentType, level?: Level) {
   const router = useRouter();
@@ -18,6 +19,7 @@ export function useQuiz(contentType: ContentType, level?: Level) {
   const startSession = useSessionStore((state) => state.start);
   const progress = useProgressStore((state) => state.items);
   const recordAnswer = useProgressStore((state) => state.recordAnswer);
+  const submittedAt = useRef(0);
   const currentQuestion: QuizQuestion | undefined = session?.questions[session.index];
   const currentItem = currentQuestion ? getItemById(currentQuestion.contentType, currentQuestion.itemId) : undefined;
 
@@ -32,8 +34,30 @@ export function useQuiz(contentType: ContentType, level?: Level) {
     if (currentQuestion.key in session.results) return;
     const result = checkAnswer(currentQuestion, input, currentItem);
     recordAnswer({ itemId: currentQuestion.itemId, type: currentQuestion.contentType, method: currentQuestion.method, correct: result.correct });
+    submittedAt.current = Date.now();
     submitSession(result.correct, input);
   }, [currentItem, currentQuestion, recordAnswer, session, submitSession]);
+
+  useEffect(() => {
+    if (session?.phase !== "result") return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    function handleKeyDown(event: KeyboardEvent) {
+      const target = event.target;
+      const targetIsButton = target instanceof HTMLButtonElement;
+      if (shouldAdvanceOnResultEnter({
+        key: event.key,
+        repeat: event.repeat,
+        isComposing: event.isComposing,
+        targetIsButton,
+        elapsedSinceSubmit: Date.now() - submittedAt.current,
+      })) {
+        event.preventDefault();
+        nextSession();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [nextSession, session?.phase]);
 
   const restart = useCallback(() => {
     if (!session || session.mode === "review" || !session.level || !session.method) return;
