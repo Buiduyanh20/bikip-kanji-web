@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense } from "react";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { Footer } from "./Footer";
@@ -14,10 +15,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex h-14 max-w-4xl items-center px-4 sm:px-6">
           <Link
             href="/"
-            className="flex items-center gap-2 text-lg font-bold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            aria-label="Bí Kíp Kanji"
+            className="flex h-10 w-44 items-center overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
-            <span aria-hidden>🈶</span>
-            Bí Kíp Kanji
+            <Image
+              src="/bi_kip_kanji.png"
+              alt="Bí Kíp Kanji"
+              width={768}
+              height={512}
+              className="h-full w-full object-cover object-center"
+              priority
+            />
           </Link>
         </div>
       </div>

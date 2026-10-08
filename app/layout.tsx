@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   title: "Bí Kíp Kanji",
   description:
     "Người Việt học Kanji dễ hơn bằng âm Hán Việt và mẹo ghi nhớ",
+  icons: {
+    icon: "/bi_kip_kanji.png",
+  },
 };
 
 export const viewport: Viewport = {
