@@ -1,11 +1,16 @@
 import { kanjiData, vocabularyData } from "@/data";
 import type { ContentType, Kanji, Level, Vocabulary } from "@/types/content";
 import type { Method } from "@/types/quiz";
+import { normalizeViet } from "@/utils/answer-checker/normalize";
 
 const kanji = Object.values(kanjiData).flat() as Kanji[];
 const vocabulary = Object.values(vocabularyData).flat() as Vocabulary[];
 const kanjiById = new Map(kanji.map((item) => [item.id, item]));
 const vocabularyById = new Map(vocabulary.map((item) => [item.id, item]));
+
+function normalizeSearchValue(value: string): string {
+  return normalizeViet(value).replace(/[\p{P}\p{S}]+/gu, " ").replace(/\s+/g, " ").trim();
+}
 
 export function getKanjiByLevel(level: Level): Kanji[] {
   return kanji.filter((item) => item.level === level);
@@ -13,6 +18,16 @@ export function getKanjiByLevel(level: Level): Kanji[] {
 
 export function getKanjiById(id: string): Kanji | undefined {
   return kanjiById.get(id);
+}
+
+export function searchKanji(keyword: string): Kanji[] {
+  const query = normalizeSearchValue(keyword);
+  if (!query) return [];
+
+  return kanji.filter((item) => {
+    const searchableValues = [item.char, ...item.hanViet, ...item.meanings].map(normalizeSearchValue);
+    return searchableValues.some((value) => value.includes(query));
+  });
 }
 
 export function getVocabularyByLevel(level: Level): Vocabulary[] {
